@@ -1,109 +1,53 @@
 /* ==========================================================================
-   Limitless Speech & Language Therapy — one-page interactions
+   Limitless Speech & Language Therapy — interactions
    ========================================================================== */
 (function () {
   "use strict";
 
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  /* ---------- Masthead state ---------- */
-  var masthead = document.querySelector(".masthead");
-
+  /* ---------- Sticky header ---------- */
+  var header = document.querySelector(".site-header");
+  var tick = false;
   function onScroll() {
-    if (masthead) masthead.classList.toggle("is-stuck", window.scrollY > 40);
+    if (header) header.classList.toggle("stuck", window.scrollY > 20);
   }
-  var pending = false;
   window.addEventListener("scroll", function () {
-    if (pending) return;
-    pending = true;
-    requestAnimationFrame(function () {
-      onScroll();
-      pending = false;
-    });
+    if (tick) return;
+    tick = true;
+    requestAnimationFrame(function () { onScroll(); tick = false; });
   }, { passive: true });
   onScroll();
 
-  /* ---------- Mobile sheet ---------- */
-  var burger = document.querySelector(".burger");
-  var sheet = document.querySelector(".sheet");
-
-  if (burger && sheet) {
-    var sheetLinks = sheet.querySelectorAll("a");
-
-    var setSheet = function (open) {
-      burger.setAttribute("aria-expanded", String(open));
-      burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
-      sheet.classList.toggle("is-open", open);
-      sheet.setAttribute("aria-hidden", String(!open));
-      document.body.classList.toggle("no-scroll", open);
-      sheet.querySelectorAll("ul a").forEach(function (a, i) {
-        a.style.transitionDelay = open ? 100 + i * 70 + "ms" : "0ms";
+  /* ---------- Mobile menu ---------- */
+  var toggle = document.querySelector(".nav-toggle");
+  var menu = document.querySelector(".mobile-menu");
+  if (toggle && menu) {
+    var links = menu.querySelectorAll("nav a");
+    function setMenu(open) {
+      toggle.setAttribute("aria-expanded", String(open));
+      toggle.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+      menu.classList.toggle("open", open);
+      menu.setAttribute("aria-hidden", String(!open));
+      document.body.classList.toggle("menu-open", open);
+      links.forEach(function (a, i) {
+        a.style.transitionDelay = open ? 90 + i * 60 + "ms" : "0ms";
       });
-    };
-
-    setSheet(false);
-    burger.addEventListener("click", function () {
-      setSheet(burger.getAttribute("aria-expanded") !== "true");
+    }
+    setMenu(false);
+    toggle.addEventListener("click", function () {
+      setMenu(toggle.getAttribute("aria-expanded") !== "true");
     });
-    sheetLinks.forEach(function (a) {
-      a.addEventListener("click", function () { setSheet(false); });
-    });
+    links.forEach(function (a) { a.addEventListener("click", function () { setMenu(false); }); });
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape" && burger.getAttribute("aria-expanded") === "true") {
-        setSheet(false);
-        burger.focus();
+      if (e.key === "Escape" && toggle.getAttribute("aria-expanded") === "true") {
+        setMenu(false); toggle.focus();
       }
     });
   }
 
-  /* ---------- Word-by-word mask reveal ----------
-     Splits text nodes into <span class="w"><i>word</i></span> while keeping
-     any inline markup (e.g. <em>) intact. */
-  function splitWords(root, counter) {
-    var nodes = Array.prototype.slice.call(root.childNodes);
-    nodes.forEach(function (node) {
-      if (node.nodeType === 3) {
-        // Split on whitespace but keep it, so punctuation that follows an
-        // inline element (e.g. "<em>word</em>,") doesn't gain a stray space.
-        var parts = node.textContent.split(/(\s+)/).filter(function (p) { return p !== ""; });
-        if (!parts.length) return;
-        var frag = document.createDocumentFragment();
-        parts.forEach(function (part) {
-          if (/^\s+$/.test(part)) {
-            frag.appendChild(document.createTextNode(" "));
-            return;
-          }
-          // Punctuation stranded after an inline element (e.g. "</em>,") stays
-          // plain text — an inline-block would let the line break before it.
-          if (/^[.,;:!?)\]}'"’”]+$/.test(part)) {
-            frag.appendChild(document.createTextNode(part));
-            return;
-          }
-          var span = document.createElement("span");
-          span.className = "w";
-          var inner = document.createElement("i");
-          inner.textContent = part;
-          inner.style.setProperty("--wd", counter.i * 42 + "ms");
-          counter.i += 1;
-          span.appendChild(inner);
-          frag.appendChild(span);
-        });
-        root.replaceChild(frag, node);
-      } else if (node.nodeType === 1) {
-        splitWords(node, counter);
-      }
-    });
-  }
-
-  if (!reduce) {
-    document.querySelectorAll("[data-split]").forEach(function (el) {
-      splitWords(el, { i: 0 });
-    });
-  }
-
-  /* ---------- Reveal on scroll ---------- */
-  var revealables = document.querySelectorAll("[data-rise], .split");
-
+  /* ---------- Scroll reveal ---------- */
+  var revealables = document.querySelectorAll("[data-reveal]");
   if (!("IntersectionObserver" in window) || reduce) {
     revealables.forEach(function (el) { el.classList.add("in"); });
   } else {
@@ -113,69 +57,94 @@
         entry.target.classList.add("in");
         io.unobserve(entry.target);
       });
-    }, { threshold: 0.1, rootMargin: "0px 0px -6% 0px" });
-
+    }, { threshold: 0.12, rootMargin: "0px 0px -7% 0px" });
     revealables.forEach(function (el) { io.observe(el); });
   }
 
-  /* Stagger direct children of [data-stagger] */
+  /* stagger children of [data-stagger] */
   document.querySelectorAll("[data-stagger]").forEach(function (group) {
-    var step = parseInt(group.getAttribute("data-stagger"), 10) || 100;
+    var step = parseInt(group.getAttribute("data-stagger"), 10) || 80;
     Array.prototype.forEach.call(group.children, function (child, i) {
-      if (child.hasAttribute("data-rise")) {
-        child.style.setProperty("--d", i * step + "ms");
-      }
+      if (child.hasAttribute("data-reveal")) child.style.setProperty("--d", i * step + "ms");
     });
   });
 
-  /* ---------- Hero scene parallax ---------- */
-  var layers = document.querySelectorAll(".hero-scene .layer");
-  var heroLogo = document.querySelector(".hero-logo");
+  /* ---------- Hero sound-field graphic (scroll-reactive) ---------- */
+  var art = document.querySelector("[data-hero-art]");
+  if (art) {
+    var svgns = "http://www.w3.org/2000/svg";
+    var waveG = art.querySelector(".ha-wave");
+    var rings = art.querySelector(".ha-rings");
+    var hero = document.querySelector(".hero");
+    var bars = [];
+    var N = 26, x0 = 78, span = 304, bw = 4.6, midY = 240;
 
-  if (layers.length && !reduce) {
-    var raf = false;
-    window.addEventListener("scroll", function () {
-      if (raf) return;
-      raf = true;
-      requestAnimationFrame(function () {
-        var y = window.scrollY;
-        if (y < window.innerHeight * 1.2) {
-          layers.forEach(function (layer) {
-            var depth = parseFloat(layer.getAttribute("data-depth")) || 0.1;
-            layer.setAttribute("transform", "translate(0," + (-y * depth).toFixed(2) + ")");
-          });
-          if (heroLogo) {
-            heroLogo.style.transform = "translate3d(0," + (y * 0.16).toFixed(2) + "px,0)";
-            heroLogo.style.opacity = String(Math.max(0, 1 - y / (window.innerHeight * 0.75)));
-          }
-        }
-        raf = false;
+    for (var b = 0; b < N; b++) {
+      var rect = document.createElementNS(svgns, "rect");
+      var x = x0 + b * (span / (N - 1));
+      rect.setAttribute("x", (x - bw / 2).toFixed(1));
+      rect.setAttribute("width", bw);
+      rect.setAttribute("rx", (bw / 2).toFixed(1));
+      if (b % 5 === 2) rect.setAttribute("class", "accent");
+      waveG.appendChild(rect);
+      bars.push(rect);
+    }
+
+    function setBar(r, h) {
+      h = Math.max(4, h);
+      r.setAttribute("height", h.toFixed(1));
+      r.setAttribute("y", (midY - h / 2).toFixed(1));
+    }
+    function heroProgress() {
+      if (!hero) return 0;
+      return Math.min(1, Math.max(0, window.scrollY / (hero.offsetHeight * 0.85)));
+    }
+
+    if (reduce) {
+      // static, pleasant arc — no motion
+      bars.forEach(function (r, i) {
+        setBar(r, 12 + 72 * Math.pow(Math.sin((i / (N - 1)) * Math.PI), 1.3));
       });
-    }, { passive: true });
+    } else {
+      var running = true;
+      function frame(t) {
+        var p = heroProgress();
+        if (rings) rings.style.transform = "scale(" + (1 + p * 0.16).toFixed(3) + ")";
+        art.style.transform = "translateY(" + (p * 30).toFixed(1) + "px)";
+        for (var i = 0; i < N; i++) {
+          var phase = i * 0.5 + t / 620 + p * 7;
+          var env = Math.pow(Math.sin((i / (N - 1)) * Math.PI), 0.6); // taper the ends
+          var amp = (14 + (26 + 150 * p) * (0.5 + 0.5 * Math.sin(phase))) * (0.35 + 0.65 * env);
+          setBar(bars[i], amp);
+        }
+        if (running) requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+      // pause the loop while the hero is off-screen
+      if ("IntersectionObserver" in window && hero) {
+        new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (en.isIntersecting && !running) { running = true; requestAnimationFrame(frame); }
+            else if (!en.isIntersecting) { running = false; }
+          });
+        }, { threshold: 0 }).observe(hero);
+      }
+    }
   }
 
-  /* ---------- Seamless ticker ---------- */
-  document.querySelectorAll(".ticker-track").forEach(function (track) {
-    if (reduce) return;
-    track.innerHTML += track.innerHTML;
-  });
-
-  /* ---------- Active section in the nav ---------- */
-  var navLinks = Array.prototype.slice.call(document.querySelectorAll(".mainnav a[href^='#']"));
+  /* ---------- Active section in nav ---------- */
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll(".nav a[href^='#']"));
   var sections = navLinks
     .map(function (a) { return document.querySelector(a.getAttribute("href")); })
     .filter(Boolean);
-
   if (sections.length && "IntersectionObserver" in window) {
     var spy = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
-        navLinks.forEach(function (a) {
-          a.classList.toggle("is-active", a.getAttribute("href") === "#" + entry.target.id);
-        });
+        var id = "#" + entry.target.id;
+        navLinks.forEach(function (a) { a.classList.toggle("current", a.getAttribute("href") === id); });
       });
     }, { rootMargin: "-45% 0px -50% 0px" });
-
     sections.forEach(function (s) { spy.observe(s); });
   }
 
@@ -183,33 +152,47 @@
   var form = document.querySelector("[data-contact-form]");
   if (form) {
     var status = form.querySelector(".form-status");
+    var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    function fieldOf(input) { return input.closest(".field"); }
+    function setErr(input, on) {
+      var f = fieldOf(input);
+      if (f) f.classList.toggle("err", on);
+      input.setAttribute("aria-invalid", on ? "true" : "false");
+    }
 
     form.addEventListener("submit", function (e) {
-      // No server endpoint is configured yet, so the message is handed to the
-      // visitor's email client. Add a real `action` (Formspree, Netlify Forms,
-      // etc.) to the <form> and this handler steps aside automatically.
+      // No backend configured — hand off to the visitor's email client.
+      // Add a real `action` (Formspree / Netlify Forms) and this steps aside.
       if (form.getAttribute("action")) return;
-
       e.preventDefault();
-      if (!form.reportValidity()) return;
 
-      var data = new FormData(form);
-      var first = String(data.get("firstName") || "").trim();
-      var last = String(data.get("lastName") || "").trim();
-      var email = String(data.get("email") || "").trim();
-      var message = String(data.get("message") || "").trim();
+      var first = form.firstName, last = form.lastName, email = form.email, message = form.message;
+      var ok = true;
+      [first, last, message].forEach(function (i) {
+        var bad = !i.value.trim(); setErr(i, bad); if (bad) ok = false;
+      });
+      var badEmail = !emailRe.test(email.value.trim()); setErr(email, badEmail); if (badEmail) ok = false;
 
-      var subject = "Website inquiry from " + first + " " + last;
-      var body = "Name: " + first + " " + last + "\nEmail: " + email + "\n\n" + message;
-
-      window.location.href =
-        "mailto:Alyssa.LimitlessSLP@gmail.com?subject=" +
-        encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
-
-      if (status) {
-        status.textContent =
-          "Opening your email app with the message ready to send. If nothing happens, email Alyssa.LimitlessSLP@gmail.com directly.";
+      if (!ok) {
+        var firstErr = form.querySelector(".field.err input, .field.err textarea");
+        if (firstErr) firstErr.focus();
+        if (status) status.textContent = "Please complete the highlighted fields.";
+        return;
       }
+
+      var subject = "Website inquiry from " + first.value.trim() + " " + last.value.trim();
+      var body = "Name: " + first.value.trim() + " " + last.value.trim() +
+                 "\nEmail: " + email.value.trim() + "\n\n" + message.value.trim();
+      window.location.href = "mailto:Alyssa.LimitlessSLP@gmail.com?subject=" +
+        encodeURIComponent(subject) + "&body=" + encodeURIComponent(body);
+      if (status) status.textContent =
+        "Opening your email app with the message ready to send. If nothing happens, email Alyssa.LimitlessSLP@gmail.com directly.";
+    });
+
+    // clear error as the user fixes a field
+    form.querySelectorAll("input, textarea").forEach(function (i) {
+      i.addEventListener("input", function () { setErr(i, false); });
     });
   }
 
