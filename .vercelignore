@@ -1,0 +1,6 @@
+# Dev tooling & local artifacts — keep these out of the public deploy
+.agents/
+.claude/
+.playwright-cli/
+skills-lock.json
+README.md

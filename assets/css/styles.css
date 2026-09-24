@@ -681,10 +681,6 @@ body.menu-open { overflow: hidden; }
 }
 .insurance .payer .tick { color: var(--leaf); }
 .insurance .note { font-size: .95rem; color: var(--ink-2); margin-top: 1rem; }
-.insurance .summer {
-  display: inline-flex; align-items: center; gap: .5rem;
-  color: var(--clay-deep); font-weight: 600;
-}
 
 /* ---------- Contact ---------- */
 .contact-grid {
