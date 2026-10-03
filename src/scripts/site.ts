@@ -2,6 +2,7 @@
  * Site behaviours that work for everyone, including reduced-motion users.
  * The richer GSAP choreography lives in ./motion and loads only when motion is welcome.
  */
+import { stylesReady } from './ready';
 
 const $ = <T extends Element = HTMLElement>(sel: string, root: ParentNode = document) =>
   root.querySelector<T>(sel);
@@ -202,13 +203,18 @@ function initForm() {
   });
 }
 
-initHeader();
+// These don't depend on layout, so they are safe to wire up immediately.
 initMenu();
-initReveal();
-initActiveNav();
 initAccordion();
 initForm();
 
-if (prefersMotion) {
-  import('./motion').then((m) => m.initMotion());
-}
+// Everything below measures the page, so it waits for the stylesheet. Module scripts
+// are not guaranteed to run after external CSS is applied (Safari, cold load).
+stylesReady().then(() => {
+  initHeader();
+  initReveal();
+  initActiveNav();
+  if (prefersMotion) {
+    import('./motion').then((m) => m.initMotion());
+  }
+});

@@ -23,8 +23,10 @@ async function heroIntro() {
   const title = hero?.querySelector<HTMLElement>('[data-hero-title]');
   if (!hero || !title) return;
 
-  // If fonts are slow, skip the intro rather than hide text for too long.
-  const ready = await fontsReady(1800);
+  // The CSS failsafe reveals the hero text 2.6s after styles apply. If we are close to
+  // that (slow connection or slow fonts), show the text now instead of replaying an intro.
+  const budget = 2300 - performance.now();
+  const ready = budget > 0 && (await fontsReady(Math.min(1800, budget)));
   if (!ready) {
     hero.classList.add('is-ready');
     return;

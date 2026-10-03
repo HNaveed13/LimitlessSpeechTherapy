@@ -8,7 +8,12 @@
  * no scroll listener, and the loop pauses whenever the hero is off-screen.
  * The canvas is painted fully opaque in the page colour and the edges are faded by
  * fading the strokes, which avoids banding from blending translucent pixels.
+ *
+ * Load-order safety: colours and size come from CSS, and this script can run before
+ * the stylesheet has been applied (Safari does this on a cold load). So it waits for
+ * styles, never paints with missing colours, and re-reads them whenever it resizes.
  */
+import { stylesReady } from './ready';
 
 const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
 const smooth = (edge0: number, edge1: number, x: number) => {
@@ -20,8 +25,10 @@ function cssVar(name: string) {
   return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
 }
 
-function hexToRgb(hex: string) {
+/** "#0e1a2b" -> "14, 26, 43". Returns null for anything that is not a hex colour. */
+function hexToRgb(hex: string): string | null {
   const m = hex.replace('#', '');
+  if (!/^([0-9a-f]{3}|[0-9a-f]{6})$/i.test(m)) return null;
   const full = m.length === 3 ? m.split('').map((c) => c + c).join('') : m;
   const n = parseInt(full, 16);
   return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
@@ -30,19 +37,29 @@ function hexToRgb(hex: string) {
 export function initField() {
   const canvas = document.querySelector<HTMLCanvasElement>('[data-field]');
   const hero = canvas?.closest<HTMLElement>('[data-hero]');
-  const ctx = canvas?.getContext('2d', { alpha: false });
+  const ctx = canvas?.getContext('2d');
   if (!canvas || !hero || !ctx) return;
 
   const reduceQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   const darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-  let inkRgb = '14, 26, 43';
-  let accentRgb = '30, 95, 207';
-  let bg = '#f6f6f3';
+  let inkRgb = '';
+  let accentRgb = '';
+  let bg = '';
+  let themeReady = false;
+
+  /** Reads colours from CSS. Returns false while the stylesheet is not applied yet. */
   const readTheme = () => {
-    inkRgb = hexToRgb(cssVar('--ink'));
-    accentRgb = hexToRgb(cssVar('--accent'));
-    bg = cssVar('--bg');
+    const ink = hexToRgb(cssVar('--ink'));
+    const accent = hexToRgb(cssVar('--accent'));
+    const page = cssVar('--bg');
+    themeReady = Boolean(ink && accent && hexToRgb(page));
+    if (themeReady) {
+      inkRgb = ink!;
+      accentRgb = accent!;
+      bg = page;
+    }
+    return themeReady;
   };
 
   let w = 0;
@@ -66,6 +83,7 @@ export function initField() {
   let start = performance.now();
 
   const buildStrokes = () => {
+    if (!themeReady) return;
     if (fadeMode === 'side') {
       const make = (rgb: string) => {
         const g = ctx.createLinearGradient(0, 0, w, 0);
@@ -83,7 +101,12 @@ export function initField() {
     }
   };
 
+  /** Syncs the canvas to its styled size and re-reads everything that comes from CSS. */
   const resize = () => {
+    // Until the stylesheet is applied the canvas has no styled size: its box would come
+    // from its own width/height attributes, so resizing the buffer here would feed back
+    // into layout. Leave it untouched until the colours (and therefore the CSS) exist.
+    if (!readTheme()) return;
     const rect = canvas.getBoundingClientRect();
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     w = rect.width;
@@ -110,7 +133,7 @@ export function initField() {
     Math.sin(x * 0.029 - i * 0.37 + t * 0.85) * 0.3 +
     Math.sin(x * 0.067 + i * 1.31 - t * 1.3) * 0.15;
 
-  const draw = (now: number) => {
+  const paint = (now: number) => {
     const t = reduceQuery.matches ? 0 : (now - start) / 1000;
 
     if (!reduceQuery.matches) {
@@ -162,42 +185,51 @@ export function initField() {
       ctx.lineTo(-step, h + 2);
       ctx.closePath();
       ctx.globalAlpha = 1;
+      ctx.fillStyle = bg;
       ctx.fill();
 
       const isAccent = i === accentIndex;
-      const fade = lineFade(y0);
       ctx.lineWidth = isAccent ? 1.75 : 1;
       ctx.strokeStyle = isAccent ? accentStroke : inkStroke;
-      ctx.globalAlpha = (isAccent ? 1 : 0.14 + depth * 0.46) * fade;
+      ctx.globalAlpha = (isAccent ? 1 : 0.14 + depth * 0.46) * lineFade(y0);
       ctx.stroke();
-      ctx.fillStyle = bg;
     }
     ctx.globalAlpha = 1;
+  };
 
-    if (running) requestAnimationFrame(draw);
+  /**
+   * One frame. If the stylesheet has not been applied yet (no colours, no size),
+   * nothing is painted and the next frame simply tries again.
+   */
+  const frame = (now: number) => {
+    if (!themeReady || w < 2 || h < 2) resize();
+    if (themeReady && w >= 2 && h >= 2) paint(now);
+    if (running) requestAnimationFrame(frame);
   };
 
   const play = () => {
     if (running || reduceQuery.matches || !visible) return;
     running = true;
-    requestAnimationFrame(draw);
+    requestAnimationFrame(frame);
   };
   const pause = () => {
     running = false;
   };
   const renderStill = () => {
-    if (!running) draw(performance.now());
+    if (!running) frame(performance.now());
   };
-
-  readTheme();
-  resize();
-  renderStill();
-  play();
-
-  new ResizeObserver(() => {
+  const refresh = () => {
     resize();
     renderStill();
-  }).observe(canvas);
+  };
+
+  refresh();
+  play();
+
+  new ResizeObserver(refresh).observe(canvas);
+  // Covers styles that land without changing the canvas box (and reduced-motion users,
+  // who have no animation loop to retry on the next frame).
+  window.addEventListener('load', refresh, { once: true });
 
   new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
@@ -205,11 +237,7 @@ export function initField() {
     else pause();
   }).observe(hero);
 
-  darkQuery.addEventListener('change', () => {
-    readTheme();
-    buildStrokes();
-    renderStill();
-  });
+  darkQuery.addEventListener('change', refresh);
   reduceQuery.addEventListener('change', () => {
     if (reduceQuery.matches) {
       pause();
@@ -230,4 +258,9 @@ export function initField() {
   hero.addEventListener('pointerleave', () => {
     pointerTarget = 0;
   });
+}
+
+/** Starts the field once the stylesheet is in place. */
+export function startField() {
+  stylesReady().then(initField);
 }
