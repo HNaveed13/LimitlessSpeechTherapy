@@ -610,9 +610,10 @@ body[data-menu-open='true'] {
 .approach__statement .word {
   display: inline-block;
 }
+/* Body sits directly under the statement, in the same column, so they read as one unit. */
 .approach__body {
-  grid-column: 7 / span 6;
-  margin-top: clamp(40px, 5vw, 72px);
+  grid-column: 1 / span 7;
+  margin-top: clamp(24px, 2.6vw, 40px);
   font-size: 1.125rem;
 }
 
@@ -784,9 +785,8 @@ body[data-menu-open='true'] {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: var(--gap);
-  align-content: space-between;
-  row-gap: 48px;
-  min-height: clamp(340px, 50svh, 500px);
+  align-content: start;
+  row-gap: clamp(16px, 1.6vw, 24px);
   padding: clamp(32px, 4.5vw, 64px);
   border-radius: var(--r-card);
   background: var(--surface);
@@ -804,14 +804,15 @@ body[data-menu-open='true'] {
   box-shadow: var(--shadow-lift);
 }
 .stack__title {
-  grid-column: 1 / span 7;
+  grid-column: 1 / -1;
   font-size: clamp(2rem, 1.2rem + 2.8vw, 3.75rem);
   line-height: 1;
   letter-spacing: -0.045em;
 }
+/* Text follows the title in the same column rather than sitting bottom-right. */
 .stack__text {
-  grid-column: 7 / span 6;
-  align-self: end;
+  grid-column: 1 / span 7;
+  max-width: 60ch;
   font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
   line-height: 1.55;
   color: var(--ink-2);
@@ -874,11 +875,10 @@ body[data-menu-open='true'] {
   margin-top: clamp(48px, 5vw, 72px);
   border-bottom: 1px solid var(--line-strong);
 }
-/* Each group reads as a label on the left and its list on the right. */
+/* Each group's heading sits directly above its list. */
 .creds__group {
   display: grid;
-  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.5fr);
-  gap: 16px var(--gap);
+  gap: 16px;
   padding-block: 28px;
   border-top: 1px solid var(--line-strong);
 }
@@ -1267,8 +1267,7 @@ a.method__value:hover {
 }
 
 @media (max-width: 767px) {
-  .principles,
-  .creds__group {
+  .principles {
     grid-template-columns: 1fr;
   }
   .about__photo {
