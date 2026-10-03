@@ -1,0 +1,135 @@
+---
+import Icon from './Icon.astro';
+import type { SiteContent } from '../lib/content';
+import { telHref } from '../lib/content';
+
+interface Props {
+  contact: SiteContent['contact'];
+  settings: SiteContent['settings'];
+}
+
+const { contact, settings } = Astro.props;
+---
+
+<section class="section contact" id="contact" aria-labelledby="contact-heading">
+  <div class="container grid">
+    <div class="contact__info">
+      <h2 class="t-h2" id="contact-heading" data-reveal>{contact.heading}</h2>
+      <p class="t-lede" data-reveal>{contact.intro}</p>
+
+      <ul class="methods" data-reveal>
+        {
+          settings.phones.map((p) => (
+            <li class="method">
+              <span class="method__icon">
+                <Icon name="phone" />
+              </span>
+              <span>
+                {p.label && <span class="method__label">{p.label}</span>}
+                <a class="method__value tnum" href={telHref(p.number)}>
+                  {p.number}
+                </a>
+              </span>
+            </li>
+          ))
+        }
+        <li class="method">
+          <span class="method__icon">
+            <Icon name="envelope-simple" />
+          </span>
+          <span>
+            <span class="method__label">Email</span>
+            <a class="method__value" href={`mailto:${settings.email}`}>{settings.email}</a>
+          </span>
+        </li>
+        <li class="method">
+          <span class="method__icon">
+            <Icon name="map-pin" />
+          </span>
+          <span>
+            <span class="method__label">Office</span>
+            <span class="method__value">
+              {settings.addressLine1}
+              <br />
+              {settings.addressLine2}
+            </span>
+            {
+              settings.mapsUrl && (
+                <a class="link t-small" href={settings.mapsUrl} target="_blank" rel="noopener">
+                  Get directions
+                </a>
+              )
+            }
+          </span>
+        </li>
+      </ul>
+
+      <div class="insurance" data-reveal>
+        <h3>{settings.insuranceHeading}</h3>
+        {
+          settings.insurancePlans.length > 0 && (
+            <ul class="tags">
+              {settings.insurancePlans.map((plan) => (
+                <li>
+                  <Icon name="check" />
+                  {plan}
+                </li>
+              ))}
+            </ul>
+          )
+        }
+        <p>{settings.insuranceNote}</p>
+      </div>
+    </div>
+
+    <div class="form-card" data-reveal>
+      <form
+        class="form"
+        data-contact-form
+        data-access-key={settings.formAccessKey || undefined}
+        data-email={settings.email}
+        data-success={contact.successMessage}
+        novalidate
+      >
+        <div class="form__row">
+          <div class="field">
+            <label for="firstName">First name</label>
+            <input id="firstName" name="firstName" type="text" autocomplete="given-name" required aria-describedby="firstName-error" />
+            <p class="field__error" id="firstName-error">Please enter your first name.</p>
+          </div>
+          <div class="field">
+            <label for="lastName">Last name</label>
+            <input id="lastName" name="lastName" type="text" autocomplete="family-name" required aria-describedby="lastName-error" />
+            <p class="field__error" id="lastName-error">Please enter your last name.</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" inputmode="email" spellcheck="false" required aria-describedby="email-error" />
+          <p class="field__error" id="email-error">Please enter a valid email address, like name@example.com.</p>
+        </div>
+
+        <div class="field">
+          <label for="message">How can we help?</label>
+          <textarea id="message" name="message" required aria-describedby="message-note message-error"></textarea>
+          <p class="field__error" id="message-error">Please add a short message.</p>
+        </div>
+
+        <label class="form__trap" aria-hidden="true">
+          Leave this empty
+          <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" />
+        </label>
+
+        <div class="form__footer">
+          <button class="btn btn--primary" type="submit">
+            {contact.submitLabel}
+            <Icon name="arrow-right" class="icon-arrow" />
+          </button>
+          <p class="form__note" id="message-note">{contact.formNote}</p>
+        </div>
+        <p class="form__status" role="status" aria-live="polite" data-form-status></p>
+      </form>
+    </div>
+  </div>
+</section>

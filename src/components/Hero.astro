@@ -1,0 +1,60 @@
+---
+import Icon from './Icon.astro';
+import type { SiteContent } from '../lib/content';
+import { telHref } from '../lib/content';
+
+interface Props {
+  hero: SiteContent['hero'];
+  settings: SiteContent['settings'];
+}
+
+const { hero, settings } = Astro.props;
+const phone = settings.phones[0]?.number;
+---
+
+<section class="hero" id="top" data-hero>
+  <canvas class="hero__field" data-field aria-hidden="true"></canvas>
+
+  <div class="container grid">
+    <div class="hero__copy">
+      <h1 class="t-display hero__title" data-intro data-hero-title>{hero.headline}</h1>
+      <p class="hero__sub" data-intro data-hero-fade>{hero.subheadline}</p>
+      <div class="hero__actions" data-intro data-hero-fade>
+        <a class="btn btn--primary" href="#contact">
+          {hero.primaryCta}
+          <Icon name="arrow-up-right" class="icon-arrow" />
+        </a>
+        {
+          phone && (
+            <a class="btn btn--ghost" href={telHref(phone)}>
+              <Icon name="phone" />
+              <span>
+                Call <span class="tnum">{phone}</span>
+              </span>
+            </a>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+{
+  hero.facts.length > 0 && (
+    <section class="facts" aria-label="At a glance">
+      <ul class="container facts__list" data-stagger>
+        {hero.facts.map((f, i) => (
+          <li class="facts__item" data-reveal style={`--d:${i * 70}`}>
+            <Icon name={f.icon} />
+            <span>{f.text}</span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<script>
+  import { initField } from '../scripts/field';
+  initField();
+</script>

@@ -1,0 +1,24 @@
+statement: Good therapy starts with the person. Their strengths, their interests, and the goals that matter in everyday life.
+body: |-
+  Current research, clinical expertise, and each family's priorities come together in every treatment plan.
+
+  Sessions are play-based and client-led where that helps. Therapy adapts as each client grows, so progress carries beyond the session and into daily life.
+principles:
+  - title: Evidence-based
+    text: Current research and clinical expertise guide every plan and every goal.
+    icon: book-open-text
+  - title: Individualized
+    text: Therapy adapts to each client's strengths and changing needs.
+    icon: fingerprint
+  - title: Play-based and client-led
+    text: Learning happens through what genuinely interests each person.
+    icon: shapes
+  - title: Neurodiversity-affirming
+    text: Strengths-first care that respects how each person communicates.
+    icon: infinity
+  - title: Family and school collaboration
+    text: Strategies stay consistent across home, school, and community.
+    icon: users-three
+  - title: Built for everyday life
+    text: Skills designed to carry into real routines and relationships.
+    icon: house-line

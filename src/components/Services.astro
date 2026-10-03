@@ -1,0 +1,56 @@
+---
+import type { SiteContent } from '../lib/content';
+import { inline } from '../lib/content';
+
+interface Props {
+  services: SiteContent['services'];
+}
+
+const { services } = Astro.props;
+---
+
+<section class="section services" id="services" aria-labelledby="services-heading">
+  <div class="container grid">
+    <div class="services__aside" data-reveal>
+      <h2 class="t-h2" id="services-heading">{services.heading}</h2>
+      <p class="t-body">{services.intro}</p>
+    </div>
+
+    <!-- Every panel is open in the HTML, so the content works without JavaScript.
+         The accordion script collapses all but the first on load. -->
+    <ul class="svc" data-accordion>
+      {
+        services.areas.map((area, i) => (
+          <li class="svc__item" data-open="true" data-reveal style={`--d:${i * 50}`}>
+            <h3>
+              <button
+                class="svc__trigger"
+                type="button"
+                id={`svc-trigger-${i}`}
+                aria-expanded="true"
+                aria-controls={`svc-panel-${i}`}
+              >
+                <span class="svc__title">{area.title}</span>
+                <span class="svc__sign" aria-hidden="true" />
+              </button>
+            </h3>
+            <div class="svc__panel" id={`svc-panel-${i}`} role="region" aria-labelledby={`svc-trigger-${i}`}>
+              <div class="svc__panel-inner">
+                <div class="svc__body">
+                  <p set:html={inline(area.summary)} />
+                  {area.tags.length > 0 && (
+                    <ul class="tags">
+                      {area.tags.map((t) => (
+                        <li>{t}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

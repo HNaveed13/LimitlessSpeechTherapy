@@ -1,0 +1,48 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/images/logo-mark.png';
+import type { SiteContent } from '../lib/content';
+import { telHref } from '../lib/content';
+
+interface Props {
+  settings: SiteContent['settings'];
+}
+
+const { settings } = Astro.props;
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container grid">
+    <div class="footer__brand">
+      <Image class="logo" src={logo} alt={settings.practiceName} height={92} loading="lazy" />
+      <p>{settings.footerBlurb}</p>
+    </div>
+
+    <nav class="footer__col" aria-labelledby="footer-explore">
+      <h2 id="footer-explore">Explore</h2>
+      <ul>
+        <li><a href="#approach">Approach</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#about">About Alyssa</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="footer__col">
+      <h2>Visit or call</h2>
+      <address>
+        <span>{settings.addressLine1}<br />{settings.addressLine2}</span>
+        {settings.phones.map((p) => <a class="tnum" href={telHref(p.number)}>{p.number}</a>)}
+        <a href={`mailto:${settings.email}`}>{settings.email}</a>
+      </address>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="footer__base">
+      <span>&copy; {year} {settings.practiceName}</span>
+      <a href="#top">Back to top</a>
+    </div>
+  </div>
+</footer>

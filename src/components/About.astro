@@ -1,0 +1,67 @@
+---
+import { Picture } from 'astro:assets';
+import Icon from './Icon.astro';
+import type { SiteContent } from '../lib/content';
+import { inline, paragraphs, uploadedImage } from '../lib/content';
+
+interface Props {
+  about: SiteContent['about'];
+}
+
+const { about } = Astro.props;
+const photo = uploadedImage(about.photo);
+
+const groups = [
+  { title: 'Credentials and licensure', items: about.credentials },
+  { title: 'Advanced training', items: about.training },
+  { title: 'Areas of focus', items: about.focus },
+].filter((g) => g.items.length > 0);
+---
+
+<section class="section about" id="about" aria-labelledby="about-name">
+  <div class="container">
+    <div class="grid">
+      {
+        photo && (
+          <figure class="about__photo" data-reveal>
+            <Picture
+              src={photo}
+              alt={about.photoAlt}
+              formats={['avif', 'webp']}
+              widths={[480, 720, 960, 1200]}
+              sizes="(max-width: 767px) 100vw, (max-width: 1023px) 58vw, 38vw"
+              loading="lazy"
+            />
+          </figure>
+        )
+      }
+
+      <div class="about__text">
+        <p class="t-label" data-reveal>{about.label}</p>
+        <h2 class="t-h2 about__name" id="about-name" data-reveal>{about.name}</h2>
+        <p class="t-lede about__lede" data-reveal set:html={inline(about.lede)} />
+        <div class="t-body about__bio" data-reveal>
+          {paragraphs(about.bio).map((p) => <p set:html={inline(p)} />)}
+        </div>
+
+        <div class="creds">
+          {
+            groups.map((g, i) => (
+              <div class="creds__group" data-reveal style={`--d:${i * 90}`}>
+                <h3>{g.title}</h3>
+                <ul>
+                  {g.items.map((item) => (
+                    <li>
+                      <Icon name="check" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

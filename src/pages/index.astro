@@ -1,0 +1,51 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Approach from '../components/Approach.astro';
+import Services from '../components/Services.astro';
+import Process from '../components/Process.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+import { getContent } from '../lib/content';
+
+const c = await getContent();
+const s = c.settings;
+
+// "East Brunswick, NJ 08816" -> locality / region / postal code, so edits stay in sync.
+const [, locality = '', region = '', postalCode = ''] =
+  s.addressLine2.match(/^\s*(.+?),\s*([A-Za-z]{2})\s+(\d{5}(?:-\d{4})?)\s*$/) ?? [];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'MedicalBusiness',
+  name: s.practiceName,
+  description: s.seoDescription,
+  url: Astro.site?.href,
+  email: s.email,
+  telephone: s.phones.map((p) => p.number),
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: s.addressLine1,
+    addressLocality: locality || undefined,
+    addressRegion: region || undefined,
+    postalCode: postalCode || undefined,
+    addressCountry: 'US',
+  },
+  founder: { '@type': 'Person', name: c.about.name },
+};
+---
+
+<Base title={s.seoTitle} description={s.seoDescription} jsonLd={jsonLd}>
+  <Header settings={s} cta={c.hero.primaryCta} />
+  <main id="main">
+    <Hero hero={c.hero} settings={s} />
+    <Approach approach={c.approach} />
+    <Services services={c.services} />
+    <Process process={c.process} />
+    <About about={c.about} />
+    <Contact contact={c.contact} settings={s} />
+  </main>
+  <Footer settings={s} />
+</Base>

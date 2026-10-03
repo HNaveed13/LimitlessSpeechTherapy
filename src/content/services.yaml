@@ -1,0 +1,45 @@
+heading: What we help with
+intro: Every client starts with a thorough evaluation of their strengths and areas of need. The results shape therapy that is engaging, functional, and genuinely theirs.
+areas:
+  - title: Speech, sound & voice
+    summary: Clearer, more confident spoken communication, from how sounds are produced to fluency and vocal health.
+    tags:
+      - Speech sound production and intelligibility
+      - Fluency
+      - Voice
+      - Oromyofunctional therapy
+  - title: Language & literacy
+    summary: Stronger understanding and expression, plus reading support through structured, evidence-based literacy methods.
+    tags:
+      - Receptive and expressive language
+      - Reading and dyslexia intervention (Orton-Gillingham, IMSE)
+      - Natural language acquisition
+  - title: Social & cognitive communication
+    summary: Support for connection and conversation, and for the thinking skills behind everyday communication.
+    tags:
+      - Social communication (pragmatics)
+      - Cognitive communication
+      - Executive functioning and ADHD support
+  - title: AAC & assistive communication
+    summary: For clients who benefit from tools and devices, building reliable, flexible ways to be understood.
+    tags:
+      - Augmentative and alternative communication (AAC)
+      - TouchChat
+  - title: Early intervention
+    summary: Early, strengths-based support for the youngest communicators, building foundational skills through play, with families closely involved.
+    tags:
+      - Early intervention
+      - Play-based
+      - Family-centered
+  - title: Neurodiversity-affirming care
+    summary: We embrace a **neurodiversity-affirming approach** that recognizes and celebrates the unique ways autistic children communicate and learn. For children who are **Gestalt Language Processors (GLPs)**, therapy honors their natural language development by building on meaningful scripts, phrases, and echolalia while supporting the growth of flexible, functional communication.
+    tags:
+      - Autism spectrum support
+      - Gestalt language processing (GLP)
+      - Echolalia and natural language development
+  - title: Beyond the session
+    summary: Skills and support that carry into home, school, and community, with the people around each client involved.
+    tags:
+      - Transition and life-skills support
+      - Parent coaching
+      - School collaboration

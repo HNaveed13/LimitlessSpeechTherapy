@@ -1,0 +1,55 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/images/logo-mark.png';
+import type { SiteContent } from '../lib/content';
+import { telHref } from '../lib/content';
+
+interface Props {
+  settings: SiteContent['settings'];
+  cta: string;
+}
+
+const { settings, cta } = Astro.props;
+const primaryPhone = settings.phones[0]?.number;
+
+const links = [
+  { href: '#approach', label: 'Approach' },
+  { href: '#services', label: 'Services' },
+  { href: '#about', label: 'About' },
+  { href: '#contact', label: 'Contact' },
+];
+---
+
+<header class="site-header" data-header>
+  <div class="container header__inner">
+    <a class="header__brand" href="#top" aria-label={`${settings.practiceName}, back to top`}>
+      <Image class="logo" src={logo} alt="" height={84} loading="eager" fetchpriority="high" />
+    </a>
+
+    <nav class="header__nav" aria-label="Primary">
+      {links.map((l) => <a href={l.href} data-nav-link>{l.label}</a>)}
+    </nav>
+
+    <div class="header__actions">
+      {primaryPhone && <a class="header__phone" href={telHref(primaryPhone)}>{primaryPhone}</a>}
+      <a class="btn btn--primary btn--sm" href="#contact">{cta}</a>
+    </div>
+
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="menu" aria-label="Open menu" data-menu-toggle>
+      <span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="menu" id="menu" data-menu data-open="false" aria-hidden="true">
+  <nav class="menu__links" aria-label="Mobile">
+    {links.map((l, i) => (
+      <a href={l.href} style={`--i:${i}`} tabindex="-1"><span>{l.label}</span></a>
+    ))}
+  </nav>
+  <div class="menu__meta">
+    {settings.phones.map((p) => <a href={telHref(p.number)} tabindex="-1">{p.number}</a>)}
+    <a href={`mailto:${settings.email}`} tabindex="-1">{settings.email}</a>
+    <span>{settings.addressLine1}, {settings.addressLine2}</span>
+  </div>
+</div>

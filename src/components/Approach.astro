@@ -1,0 +1,34 @@
+---
+import Icon from './Icon.astro';
+import type { SiteContent } from '../lib/content';
+import { inline, paragraphs } from '../lib/content';
+
+interface Props {
+  approach: SiteContent['approach'];
+}
+
+const { approach } = Astro.props;
+---
+
+<section class="section approach" id="approach" aria-labelledby="approach-statement">
+  <div class="container">
+    <div class="grid">
+      <h2 class="approach__statement" id="approach-statement" data-words>{approach.statement}</h2>
+      <div class="approach__body t-body" data-reveal>
+        {paragraphs(approach.body).map((p) => <p set:html={inline(p)} />)}
+      </div>
+    </div>
+
+    <ul class="principles">
+      {
+        approach.principles.map((p, i) => (
+          <li class="principle" data-reveal style={`--d:${(i % 3) * 90}`}>
+            <Icon name={p.icon} />
+            <h3>{p.title}</h3>
+            <p set:html={inline(p.text)} />
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

@@ -1,0 +1,25 @@
+---
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import logo from '../assets/images/logo-mark.png';
+import { getContent, telHref } from '../lib/content';
+
+const { settings } = await getContent();
+const phone = settings.phones[0]?.number;
+---
+
+<Base title={`Page not found | ${settings.practiceName}`} description={settings.seoDescription}>
+  <main id="main" class="container" style="min-height:100svh;display:grid;align-content:center;gap:28px;padding-block:96px">
+    <a href="/" aria-label={`${settings.practiceName} home`}>
+      <Image class="logo" src={logo} alt="" height={92} style="height:46px;width:auto" />
+    </a>
+    <h1 class="t-display" style="max-width:14ch">This page doesn't exist.</h1>
+    <p class="t-lede" style="max-width:40ch;color:var(--ink-2)">
+      The link may be out of date. Everything about the practice is on the home page.
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:12px">
+      <a class="btn btn--primary" href="/">Go to the home page</a>
+      {phone && <a class="btn btn--ghost" href={telHref(phone)}>Call <span class="tnum">{phone}</span></a>}
+    </div>
+  </main>
+</Base>

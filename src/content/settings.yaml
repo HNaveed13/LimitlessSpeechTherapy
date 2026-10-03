@@ -1,0 +1,19 @@
+practiceName: Limitless Speech & Language Therapy
+phones:
+  - number: 908-331-3122
+    label: Call or text
+  - number: 646-784-0059
+    label: Call or text
+email: Alyssa.LimitlessSLP@gmail.com
+addressLine1: 4 Cornwall Drive, Suite 203
+addressLine2: East Brunswick, NJ 08816
+mapsUrl: https://www.google.com/maps/search/?api=1&query=4+Cornwall+Drive+Suite+203+East+Brunswick+NJ+08816
+insuranceHeading: Insurance and payment
+insurancePlans:
+  - Horizon BCBS
+  - Aetna
+insuranceNote: Limitless is currently in network with Horizon BCBS and Aetna. Private pay options are also available.
+footerBlurb: A private speech and language therapy practice in East Brunswick, NJ, offering evidence-based, individualized care for children and adults.
+seoTitle: Limitless Speech & Language Therapy | East Brunswick, NJ
+seoDescription: Evidence-based, individualized speech and language therapy for children and adults in East Brunswick, NJ. In network with Horizon BCBS and Aetna.
+formAccessKey: ""

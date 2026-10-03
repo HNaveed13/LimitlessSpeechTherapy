@@ -1,0 +1,27 @@
+---
+import type { SiteContent } from '../lib/content';
+import { inline } from '../lib/content';
+
+interface Props {
+  process: SiteContent['process'];
+}
+
+const { process } = Astro.props;
+---
+
+<section class="section process" aria-labelledby="process-heading">
+  <div class="container">
+    <h2 class="t-h2 process__title" id="process-heading" data-reveal>{process.heading}</h2>
+
+    <ol class="stack" data-stack>
+      {
+        process.steps.map((step, i) => (
+          <li class="stack__card" style={`--i:${i}`}>
+            <h3 class="stack__title">{step.title}</h3>
+            <p class="stack__text" set:html={inline(step.text)} />
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>

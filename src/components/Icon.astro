@@ -1,0 +1,59 @@
+---
+/**
+ * Phosphor "light" icons, inlined at build time (no runtime icon library).
+ * Add a new icon by importing it below and adding it to the map.
+ */
+import arrowUpRight from '@phosphor-icons/core/assets/light/arrow-up-right-light.svg?raw';
+import arrowRight from '@phosphor-icons/core/assets/light/arrow-right-light.svg?raw';
+import bookOpenText from '@phosphor-icons/core/assets/light/book-open-text-light.svg?raw';
+import calendarBlank from '@phosphor-icons/core/assets/light/calendar-blank-light.svg?raw';
+import certificate from '@phosphor-icons/core/assets/light/certificate-light.svg?raw';
+import chatsCircle from '@phosphor-icons/core/assets/light/chats-circle-light.svg?raw';
+import check from '@phosphor-icons/core/assets/light/check-light.svg?raw';
+import envelopeSimple from '@phosphor-icons/core/assets/light/envelope-simple-light.svg?raw';
+import fingerprint from '@phosphor-icons/core/assets/light/fingerprint-light.svg?raw';
+import heart from '@phosphor-icons/core/assets/light/heart-light.svg?raw';
+import houseLine from '@phosphor-icons/core/assets/light/house-line-light.svg?raw';
+import infinity from '@phosphor-icons/core/assets/light/infinity-light.svg?raw';
+import mapPin from '@phosphor-icons/core/assets/light/map-pin-light.svg?raw';
+import phone from '@phosphor-icons/core/assets/light/phone-light.svg?raw';
+import shapes from '@phosphor-icons/core/assets/light/shapes-light.svg?raw';
+import shieldCheck from '@phosphor-icons/core/assets/light/shield-check-light.svg?raw';
+import users from '@phosphor-icons/core/assets/light/users-light.svg?raw';
+import usersThree from '@phosphor-icons/core/assets/light/users-three-light.svg?raw';
+
+const icons: Record<string, string> = {
+  'arrow-up-right': arrowUpRight,
+  'arrow-right': arrowRight,
+  'book-open-text': bookOpenText,
+  'calendar-blank': calendarBlank,
+  certificate,
+  'chats-circle': chatsCircle,
+  check,
+  'envelope-simple': envelopeSimple,
+  fingerprint,
+  heart,
+  'house-line': houseLine,
+  infinity,
+  'map-pin': mapPin,
+  phone,
+  shapes,
+  'shield-check': shieldCheck,
+  users,
+  'users-three': usersThree,
+};
+
+interface Props {
+  name: string;
+  class?: string;
+}
+
+const { name, class: className = '' } = Astro.props;
+const raw = icons[name] ?? icons.heart;
+const svg = raw.replace(
+  '<svg',
+  `<svg class="icon ${className}" aria-hidden="true" focusable="false"`,
+);
+---
+
+<Fragment set:html={svg} />

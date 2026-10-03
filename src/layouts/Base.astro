@@ -1,0 +1,59 @@
+---
+import '@fontsource-variable/host-grotesk';
+import '../styles/global.css';
+import fontUrl from '@fontsource-variable/host-grotesk/files/host-grotesk-latin-wght-normal.woff2?url';
+import { getImage } from 'astro:assets';
+import ogSource from '../assets/images/logo.png';
+
+interface Props {
+  title: string;
+  description: string;
+  jsonLd?: Record<string, unknown>;
+}
+
+const { title, description, jsonLd } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const og = await getImage({ src: ogSource, width: 1200, format: 'png' });
+const ogUrl = new URL(og.src, Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <meta name="theme-color" content="#f6f6f3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b121c" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+    <!-- Runs before paint: enables JS-only styles and records the motion preference. -->
+    <script is:inline>
+      document.documentElement.classList.add('js');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('motion');
+      }
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+    <script>
+      import '../scripts/site';
+    </script>
+  </body>
+</html>
