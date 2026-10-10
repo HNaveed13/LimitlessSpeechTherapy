@@ -1,11 +1,21 @@
 label: Meet your clinician
 name: Alyssa LaPlaga, M.S., CCC-SLP
-lede: A licensed and certified speech-language pathologist committed to compassionate, individualized care that helps clients and families build confidence and thrive in everyday life.
-bio: |-
-  Alyssa has practiced as a licensed and certified SLP since 2014, in public school and private practice settings, supporting individuals across the lifespan from birth through adulthood. She takes a person-centered approach, so each client's strengths, preferences, and meaningful goals lead the way, with input from families and support systems.
+lede: >-
+  A licensed and certified speech-language pathologist committed to
+  compassionate, individualized care that helps clients and families build
+  confidence and thrive in everyday life.
+bio: >-
+  Alyssa has practiced as a licensed and certified SLP since 2014, in public
+  school and private practice settings, supporting individuals across the
+  lifespan from birth through adulthood. She takes a person-centered approach,
+  so each client's strengths, preferences, and meaningful goals lead the way,
+  with input from families and support systems.
 
-  She founded Limitless to offer flexible, client-centered care. Continuing education is central to her practice, and she keeps refining her skills to meet each client's evolving needs.
-photo: /src/assets/uploads/alyssa-laplaga.jpg
+
+  She founded Limitless to offer flexible, client-centered care. Continuing
+  education is central to her practice, and she keeps refining her skills to
+  meet each client's evolving needs.
+photo: /src/assets/uploads/photo.jpg
 photoAlt: Portrait of Alyssa LaPlaga, smiling, in a white top and dark blazer.
 credentials:
   - Certificate of Clinical Competence (ASHA)
@@ -15,11 +25,4 @@ credentials:
   - PROMPT trained
 training:
   - IMSE Comprehensive Orton-Gillingham
-  - TouchChat Partner Program
-  - Natural Language Acquisition
-focus:
-  - Oromyofunctional therapy
-  - AAC
-  - Dyslexia and reading
-  - Executive functioning and ADHD
-  - Speech sound disorders
+focus: []
