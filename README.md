@@ -46,13 +46,15 @@ The code is already on GitHub at `HNaveed13/LimitlessSpeechTherapy`.
 1. Commit and push this version to GitHub.
 2. In Vercel: **Add New → Project**, import the repository. Vercel detects Astro
    automatically. Click **Deploy**.
-3. In **Settings → Environment Variables**, add
-   `SITE_URL` = `https://limitlessspeechandlanguagetherapy.com` (or whatever the final
-   domain is). This is used for Google and social-share links.
+3. Link previews (the logo card shown when the site is shared), canonical links and
+   Google all use the project's Vercel production domain automatically, so there is
+   nothing to set. Do **not** set `SITE_URL` to a domain that still points at
+   Squarespace: previews would then load a missing image and fall back to the portrait.
 4. When you are ready to switch the real domain over: **Settings → Domains**, add the
    domain, then update its DNS where it is registered (currently Squarespace) using the
    records Vercel shows. The old Squarespace site keeps serving the domain until you do
-   this, so nothing changes for visitors before you are ready.
+   this, so nothing changes for visitors before you are ready. Redeploy once the DNS has
+   switched so the share links pick up the real domain.
 
 ## Turn on editing for Alyssa (Keystatic Cloud)
 
@@ -61,14 +63,16 @@ The free plan covers up to 3 people.
 
 1. Go to [keystatic.cloud](https://keystatic.cloud) and sign in with the GitHub account
    that owns the repository.
-2. Create a **team** (for example `limitless`) and a **project** (for example
-   `website`), and connect the `LimitlessSpeechTherapy` repository when asked. This
-   installs Keystatic's GitHub app on that repo so it can save edits.
-3. In Vercel, add the environment variable
-   `PUBLIC_KEYSTATIC_CLOUD_PROJECT` = `limitless/website` (the exact `team/project`
-   value is shown on the project's settings page in Keystatic Cloud).
+2. Create a **team** and a **project**, and connect the `LimitlessSpeechTherapy`
+   repository when asked. This installs Keystatic's GitHub app on that repo so it can
+   save edits. In the project settings, set both **Primary URL** and **Project URL** to
+   the live site address (no `/keystatic`, no trailing slash).
+3. On that same settings page, copy the **Project key** (it looks like
+   `team/project`; for this site it is `limitless/limitlessslp`). In Vercel, add the
+   environment variable `PUBLIC_KEYSTATIC_CLOUD_PROJECT` with **that exact value**.
    **Then redeploy.** This value is baked in at build time, so it only takes effect
-   after a new deployment.
+   after a new deployment. If `/keystatic` says "Unknown Project", this value does not
+   match the Project key.
 4. Invite Alyssa to the team by email from Keystatic Cloud.
 5. Send her [HOW-TO-EDIT.md](HOW-TO-EDIT.md). She edits at
    `https://<your-domain>/keystatic`.

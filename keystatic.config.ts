@@ -4,8 +4,9 @@ import { config, fields, singleton } from '@keystatic/core';
  * Keystatic admin panel for the Limitless website.
  *
  * Local development edits the YAML files in src/content directly.
- * In production, set PUBLIC_KEYSTATIC_CLOUD_PROJECT (e.g. "limitless/website")
- * and edits are saved through Keystatic Cloud as commits to GitHub, which
+ * In production, set PUBLIC_KEYSTATIC_CLOUD_PROJECT to the "Project key" shown in
+ * Keystatic Cloud (for this site: "limitless/limitlessslp"). Edits are then saved
+ * through Keystatic Cloud as commits to GitHub, which
  * triggers a Vercel redeploy. Editors do not need a GitHub account.
  */
 const cloudProject = import.meta.env.PUBLIC_KEYSTATIC_CLOUD_PROJECT as string | undefined;
